@@ -3,7 +3,7 @@ import MovieList from './components/MovieList';
 import MovieDetails from './components/MovieDetails';
 import './App.css';
 
-// Movie Catalog App Component
+// Movie Picture Catalog Application Component
 
 export default function App() {
   const [selectedMovie, setSelectedMovie] = useState(null);
