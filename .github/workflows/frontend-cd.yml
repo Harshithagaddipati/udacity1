@@ -87,9 +87,20 @@ jobs:
         id: get-backend-url
         run: |
           aws eks update-kubeconfig --name cluster --region us-east-1
-          BACKEND_HOST=$(kubectl get svc backend -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || true)
+          echo "Waiting for backend LoadBalancer hostname..."
+          BACKEND_HOST=""
+          for i in {1..30}; do
+            BACKEND_HOST=$(kubectl get svc backend -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || true)
+            if [ -n "$BACKEND_HOST" ]; then
+              echo "Found Backend Host: $BACKEND_HOST"
+              break
+            fi
+            echo "Waiting for LoadBalancer ingress hostname... ($i/30)"
+            sleep 5
+          done
           if [ -z "$BACKEND_HOST" ]; then
-            BACKEND_HOST="ad54d235eff574475a1b293c49b0987d-1253446804.us-east-1.elb.amazonaws.com"
+            echo "ERROR: Backend LoadBalancer hostname not found. Ensure Backend CD has been deployed."
+            exit 1
           fi
           echo "backend_url=http://${BACKEND_HOST}" >> $GITHUB_OUTPUT
 
