@@ -1,11 +1,6 @@
-name: Frontend CI
+﻿name: Frontend Continuous Integration
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "starter/frontend/**"
   pull_request:
     branches:
       - main
